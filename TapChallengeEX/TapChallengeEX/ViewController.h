@@ -11,6 +11,7 @@
 @interface ViewController : UIViewController
 
 @property (nonatomic, weak) IBOutlet UILabel * tapsCountLabel;
+@property (nonatomic, weak) IBOutlet UILabel *timeLabel;
 
 -(IBAction)buttonPressed:(id)sender;
 

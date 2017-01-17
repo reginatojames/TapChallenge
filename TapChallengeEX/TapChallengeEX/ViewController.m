@@ -12,6 +12,10 @@
 #define GameTime 3
 #define FirstAppLaunch @"FirstAppLaunch"
 
+#define Defaults [NSUserDefaults standardUserDefaults]
+#define Results @"UserScore"
+
+
 @interface ViewController () {
     int _tapsCount;
     int _timeCount;
@@ -36,12 +40,12 @@
 -(void)viewDidAppear:(BOOL)animated{
     
     if([self firstAppLaunch]){
-        [[NSUserDefaults standardUserDefaults]setBool:true forKey:FirstAppLaunch];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+        [Defaults setBool:true forKey:FirstAppLaunch];
+        [Defaults synchronize];
     }else{
-        int res = [self risultato];
-        if(res > 0){
-            [self mostraUltimoRisultato:res];
+        if([self risultati].count > 0){
+            NSNumber *value = [self risultati].lastObject;
+            [self mostraUltimoRisultato:value.intValue];
         }
     }
         
@@ -131,19 +135,54 @@
 
 #pragma mark - Persistenza
 
--(int)risultato{
+-(NSArray *)risultati{
     //ricavo i dati salvati dagli UserDefaults
-    int value = [[NSUserDefaults standardUserDefaults] integerForKey:@"tapsCount"];
+    NSArray *array = [Defaults objectForKey:Results];
+    
+    if(array == nil){
+        array = @[];//inizializzo un array statico
+    }
     
     //leggo la variabile
-    NSLog(@"VALORE DAGLI USERDAEFAULTS: %i", value);
+    NSLog(@"VALORE DAGLI USERDAEFAULTS: %@", array);
     
-    return value;
+    return array;
 }
 
 -(void)salvaRisultato{
-    [[NSUserDefaults standardUserDefaults] setInteger:_tapsCount forKey:@"tapsCount"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSMutableArray *array = [[Defaults objectForKey:Results] mutableCopy];
+    if(array == nil){
+        //array = [[NSMutableArra
+        //old wayy alloc] init].mutableCopy;
+        
+        //new way
+        array = @[].mutableCopy;
+    }
+    //old way
+    //NSNumber *number = [NSNumber numberWithInt:_tapsCount];
+    
+    //new way
+    [array addObject:@(_tapsCount)];
+    
+    NSLog(@"mio array -> %@", array);
+    
+    NSArray *arrayToBeSaved = [array sortedArrayUsingComparator:^NSComparisonResult(NSNumber *obj1, NSNumber *obj2) {
+        int value1 = obj1.intValue;
+        int value2 = obj2.intValue;
+        
+        if(value1 == value2){
+            return NSOrderedSame;
+        }
+        
+        if(value1 < value2){
+            return NSOrderedAscending;
+        }
+        
+        return NSOrderedDescending;
+    }];
+    
+    [Defaults setObject:arrayToBeSaved forKey:Results];
+    [Defaults synchronize];
 }
 
 -(bool)firstAppLaunch{

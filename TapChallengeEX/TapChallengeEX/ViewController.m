@@ -68,7 +68,7 @@
 
 #pragma mark - Actions
 
--(IBAction)buttonPressed:(id)sender {
+-(IBAction)tapGestureRecognizerDidRecognizeTap:(id)sender{
     // loggo in console il valore dei taps effettuati
     NSLog(@"buttonPressed: %i", _tapsCount);
     
@@ -87,6 +87,10 @@
     
     // aggiorno il valore della label
     [self.tapsCountLabel setText:[NSString stringWithFormat:@"%i", _tapsCount]];
+}
+
+-(IBAction)buttonPressed:(id)sender {
+//
 }
 
 -(void)timerTick {

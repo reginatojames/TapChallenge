@@ -6,7 +6,8 @@
 //  Copyright © 2017 Reginato James. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "GameViewController.h"
+#import "ScoreTableViewController.h"
 
 #define GameTimer 1
 #define GameTime 3
@@ -16,17 +17,16 @@
 #define Results @"UserScore"
 
 
-@interface ViewController () {
+@interface GameViewController () {
     int _tapsCount;
     int _timeCount;
-    bool _justStarted;
     
     NSTimer *_gameTimer;
 }
 
 @end
 
-@implementation ViewController
+@implementation GameViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -34,7 +34,16 @@
     self.tapsCountLabel.minimumScaleFactor = 0.5;
     [self.tapsCountLabel setAdjustsFontSizeToFitWidth:true];
     [self initializeGame];
-    _justStarted = true;
+    
+    //setto il navigation bar title
+    self.title = @"Tap Challenge";
+    
+    //creo un pulsante per la navigationBar
+    UIBarButtonItem *scoreButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(scoreButtonPressed)];
+    
+    //imposto il pulsante alla dedstra della mia navigation bar
+    self.navigationItem.rightBarButtonItem = scoreButtonItem;
+    
 }
 
 -(void)viewDidAppear:(BOOL)animated{
@@ -56,7 +65,7 @@
     _timeCount = GameTime;
     
     [self.tapsCountLabel setText:@"Tap to Play"];
-    [self.timeLabel setText:[NSString stringWithFormat:@"Tap Challenge - %i sec", _timeCount]];
+    [self.timeLabel setText:[NSString stringWithFormat:@"Ti restano - %i sec", _timeCount]];
     
 }
 
@@ -67,6 +76,20 @@
 }
 
 #pragma mark - Actions
+
+-(void)scoreButtonPressed{
+    ScoreTableViewController *tableViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ScoreTableViewController"];
+    
+    //pèrendo i risukltati e li passo alla tableview
+    //NSArray *resultsArray = [self risultati];
+    //[tableViewController setScoresArray:resultsArray];
+    
+    //boh
+    tableViewController.delegate = self;
+    
+    //pusho all'interno dello stack del mio navigationController un nuovo viewController
+    [self.navigationController pushViewController:tableViewController animated:true];
+}
 
 -(IBAction)tapGestureRecognizerDidRecognizeTap:(id)sender{
     // loggo in console il valore dei taps effettuati
@@ -98,7 +121,7 @@
     
     _timeCount--;
     
-    [self.timeLabel setText:[NSString stringWithFormat:@"%i sec", _timeCount]];
+    [self.timeLabel setText:[NSString stringWithFormat:@"Ti restano - %i sec", _timeCount]];
     
     if (_timeCount == 0) {
         [_gameTimer invalidate];
@@ -191,6 +214,16 @@
 
 -(bool)firstAppLaunch{
     return [[NSUserDefaults standardUserDefaults] boolForKey:@"FirstAppLaunch"];
+}
+
+#pragma mark - ScoreTableViewDelegate
+
+-(NSArray *)scoreTableViewFetchResults{
+    return [self risultati];
+}
+
+-(void)scoreTableViewDidFetchResults{
+    
 }
 
 @end

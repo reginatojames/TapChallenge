@@ -25,7 +25,8 @@
     
     //richiamo il metodo del mio Delegate
     NSArray *array = [self.delegate scoreTableViewFetchResults];
-    self.scoresArray = array;
+    NSArray* reversedArray = [[array reverseObjectEnumerator] allObjects];
+    self.scoresArray = reversedArray;
     
     [self.delegate scoreTableViewDidFetchResults];
 }
@@ -56,6 +57,12 @@
     // Configure the cell...
     NSString *text = [NSString stringWithFormat:@"Row %li - Score: %@", (long)indexPath.row, self.scoresArray[indexPath.row]];
     [cell.textLabel setText: text];
+    
+    if(indexPath.row == 0)
+        [cell setBackgroundColor:[UIColor yellowColor]];
+    else
+        [cell setBackgroundColor:[UIColor whiteColor]];
+    
     //accessory type
     //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;

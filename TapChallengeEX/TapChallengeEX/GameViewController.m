@@ -44,10 +44,13 @@
     //imposto il pulsante alla dedstra della mia navigation bar
     self.navigationItem.rightBarButtonItem = scoreButtonItem;
     
+    UILabel *nuovaLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 100, 200, 400)];
+    [nuovaLabel setText:@"label da codice"];
+    [self.view addSubview:nuovaLabel];
 }
 
 -(void)viewDidAppear:(BOOL)animated{
-    
+    /*
     if([self firstAppLaunch]){
         [Defaults setBool:true forKey:FirstAppLaunch];
         [Defaults synchronize];
@@ -56,8 +59,13 @@
             NSNumber *value = [self risultati].lastObject;
             [self mostraUltimoRisultato:value.intValue];
         }
-    }
-        
+    }*/
+    
+    [self resumeGame];
+}
+
+-(void)viewWillDisappear:(BOOL)animated{
+    [self pauseGame];
 }
 
 -(void)initializeGame {
@@ -69,6 +77,18 @@
     
 }
 
+-(void)pauseGame{
+    if(_gameTimer != nil){
+        [_gameTimer invalidate];
+        _gameTimer = nil;
+    }
+}
+
+-(void)resumeGame{
+    if(_timeCount != 0 && _tapsCount > 0){
+        _gameTimer = [NSTimer scheduledTimerWithTimeInterval:GameTimer target:self selector:@selector(timerTick) userInfo:nil repeats:true];
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
